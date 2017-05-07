@@ -17,9 +17,11 @@
 // Original JsonSerializer contributed by Daniel Crenna (@dimebrain)
 #endregion
 
-using System.IO;
 using Newtonsoft.Json;
+using RestSharp.Deserializers;
 using RestSharp.Serializers;
+using System;
+using System.IO;
 using JsonSerializer = Newtonsoft.Json.JsonSerializer;
 
 namespace RestSharp.Newtonsoft.Json
@@ -28,7 +30,7 @@ namespace RestSharp.Newtonsoft.Json
     /// Default JSON serializer for request bodies
     /// Doesn't currently use the SerializeAs attribute, defers to Newtonsoft's attributes
     /// </summary>
-    public class NewtonsoftJsonSerializer : ISerializer
+    public class NewtonsoftJsonSerializer : ISerializer, IDeserializer
     {
         private readonly JsonSerializer _serializer;
 
@@ -93,5 +95,24 @@ namespace RestSharp.Newtonsoft.Json
         /// Content type for serialized content
         /// </summary>
         public string ContentType { get; set; }
+
+
+        /// <summary>
+        /// Deserialize JSON to an object
+        /// </summary>
+        /// <param name="response">Rest reponse that uses deserializer</param>
+        /// <returns>Deserialized object</returns>
+        public T Deserialize<T>(IRestResponse response)
+        {
+            var content = response.Content;
+
+            using (var reader = new StringReader(content))
+            {
+                using (var jsonReader = new JsonTextReader(reader))
+                {
+                    return _serializer.Deserialize<T>(jsonReader);
+                }
+            }
+        }
     }
 }
