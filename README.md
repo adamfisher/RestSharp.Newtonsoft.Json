@@ -10,7 +10,7 @@ After working on several projects and getting annoyed with the limited functiona
 
 ### Installation
 
-This package is available as a [**nuget package**](https://www.nuget.org/packages/RestSharp.Newtonsoft.Json) on nuget.org.
+This package is available as a [**nuget package**](https://www.nuget.org/packages/RestSharp.Newtonsoft.Json) on nuget.org. (By now the package is from original branch and does not include deserializer).
 
 ### Code
 
@@ -22,3 +22,15 @@ request.JsonSerializer = new NewtonsoftJsonSerializer();
 ```
 
 If you don't want to keep initializing every `RestRequest`, you can also use the **`RestSharp.Newtonsoft.Json.RestRequest`** class instead of the one from RestSharp. They are named the same but this class will default to using the Newtonsoft.JSON serialization engine.
+
+Also if you want to use `NewtonsoftJsonSerializer` as deserializer when receiving JSON content reponses, you sould use `AddHandler` to the `RestClient`like this:
+
+```csharp
+var client = new RestClient(url);
+
+client.AddHandler("application/json", new NewtonsoftJsonSerializer());
+client.AddHandler("text/javascript", new NewtonsoftJsonSerializer());
+client.AddHandler("text/json", new NewtonsoftJsonSerializer());
+client.AddHandler("text/x-json", new NewtonsoftJsonSerializer());
+client.AddHandler("*+json", new NewtonsoftJsonSerializer());
+```
